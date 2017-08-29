@@ -1,4 +1,6 @@
 <?php
+namespace PhpUtils;
+
 /**
  * @author  Peter Hinchley
  * @license http://sam.zoy.org/wtfpl
