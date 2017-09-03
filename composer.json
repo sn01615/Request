@@ -2,7 +2,6 @@
 	"name" : "sn01615/request",
 	"description" : "A wrapper for HTTP requests in PHP.",
 	"type" : "library",
-	"license" : "GPL-3.0",
 	"authors" : [{
 			"name" : "YangLong",
 			"email" : "168119405@qq.com"
