@@ -1,12 +1,12 @@
-Install
-=======
-```bash
-composer require sn01615/request
-```
-
 Request
 =======
 The 'Request' class is a wrapper for HTTP requests. It provides a collection of simple methods for easily and reliably retrieving information associated with a HTTP request.
+
+Install
+-------
+```bash
+composer require sn01615/request
+```
 
 Usage
 -----
