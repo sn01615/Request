@@ -3,6 +3,10 @@
 	"description" : "A wrapper for HTTP requests in PHP.",
 	"type" : "library",
 	"authors" : [{
+			"name" : "hinchley",
+			"email" : "hinchley@gmail.coom"
+		},
+		{
 			"name" : "YangLong",
 			"email" : "168119405@qq.com"
 		}
