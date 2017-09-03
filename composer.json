@@ -4,9 +4,9 @@
 	"type" : "library",
 	"authors" : [{
 			"name" : "hinchley",
-			"email" : "hinchley@gmail.coom"
-		},
-		{
+			"email" : "hinchley@gmail.coom",
+			"homepage" : "http://hinchley.net/"
+		}, {
 			"name" : "YangLong",
 			"email" : "168119405@qq.com"
 		}
@@ -29,5 +29,6 @@
 			"url" : "git@github.com:sn01615/Request.git",
 			"name" : "GitHub"
 		}
-	]
+	],
+	"license" : "WTFPL"
 }
