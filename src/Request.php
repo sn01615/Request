@@ -39,7 +39,7 @@ class Request
      *
      * @var array
      */
-    protected static $input;
+    protected static $input = array();
 
     /**
      * An array of media type formats.
@@ -105,7 +105,7 @@ class Request
      */
     protected static function submitted()
     {
-        if (static::$input !== NULL)
+        if (! empty(static::$input))
             return static::$input;
         
         parse_str(static::body(), $input);
