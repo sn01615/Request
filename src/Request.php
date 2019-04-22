@@ -1,4 +1,5 @@
 <?php
+
 namespace PhpUtils;
 
 /**
@@ -25,69 +26,69 @@ class Request
      *
      * @var array
      */
-    protected static $proxies = array();
+    protected static $proxies = [];
 
     /**
      * An array of URI resolvers.
      *
      * @var array
      */
-    protected static $resolvers = array();
+    protected static $resolvers = [];
 
     /**
      * All input data for the request. Used as a cache.
      *
      * @var array
      */
-    protected static $input = array();
+    protected static $input = [];
 
     /**
      * An array of media type formats.
      *
      * @var array
      */
-    protected static $formats = array(
-        'html' => array(
+    protected static $formats = [
+        'html' => [
             'text/html',
-            'application/xhtml+xml'
-        ),
-        'txt' => array(
-            'text/plain'
-        ),
-        'js' => array(
+            'application/xhtml+xml',
+        ],
+        'txt' => [
+            'text/plain',
+        ],
+        'js' => [
             'application/javascript',
             'application/x-javascript',
-            'text/javascript'
-        ),
-        'css' => array(
-            'text/css'
-        ),
-        'json' => array(
+            'text/javascript',
+        ],
+        'css' => [
+            'text/css',
+        ],
+        'json' => [
             'application/json',
-            'application/x-json'
-        ),
-        'xml' => array(
+            'application/x-json',
+        ],
+        'xml' => [
             'text/xml',
             'application/xml',
-            'application/x-xml'
-        ),
-        'rdf' => array(
-            'application/rdf+xml'
-        ),
-        'atom' => array(
-            'application/atom+xml'
-        ),
-        'rss' => array(
-            'application/rss+xml'
-        )
-    );
+            'application/x-xml',
+        ],
+        'rdf' => [
+            'application/rdf+xml',
+        ],
+        'atom' => [
+            'application/atom+xml',
+        ],
+        'rss' => [
+            'application/rss+xml',
+        ],
+    ];
 
     /**
      * Get the value of an item in a superglobal array.
      *
-     * @param  array  $array   The superglobal array.
-     * @param  string $key     The array key.
-     * @param  string $default The default value.
+     * @param array $array The superglobal array.
+     * @param string $key The array key.
+     * @param string $default The default value.
      * @return string
      */
     protected static function lookup($array, $key, $default)
@@ -105,11 +106,11 @@ class Request
      */
     protected static function submitted()
     {
-        if (! empty(static::$input))
+        if (!empty(static::$input))
             return static::$input;
-        
+
         parse_str(static::body(), $input);
-        return static::$input = (array) $_GET + (array) $_POST + $input;
+        return static::$input = (array)$_GET + (array)$_POST + $input;
     }
 
     /**
@@ -125,7 +126,7 @@ class Request
     /**
      * Get the raw body of a request.
      *
-     * @param  string $default The default value.
+     * @param string $default The default value.
      * @return string
      */
     public static function body($default = NULL)
@@ -147,8 +148,8 @@ class Request
      *   $input = Request::get();
      * </code>
      *
-     * @param  string $key     The array key.
-     * @param  string $default The default value.
+     * @param string $key The array key.
+     * @param string $default The default value.
      * @return string
      */
     public static function get($key = NULL, $default = NULL)
@@ -159,8 +160,8 @@ class Request
     /**
      * Get the value of an item in the $_POST array.
      *
-     * @param  string $key     The array key.
-     * @param  string $default The default value.
+     * @param string $key The array key.
+     * @param string $default The default value.
      * @return string          NULL if key undefined.
      */
     public static function post($key = NULL, $default = NULL)
@@ -172,15 +173,15 @@ class Request
      * Get the value of an item that was submitted via the PUT or
      * DELETE methods.
      *
-     * @param  string $key     The array key.
-     * @param  string $default The default value.
+     * @param string $key The array key.
+     * @param string $default The default value.
      * @return string
      */
     protected static function stream($key, $default)
     {
         if (Request::overridden())
             return static::lookup($_POST, $key, $default);
-        
+
         parse_str(file_get_contents('php://input'), $input);
         return static::lookup($input, $key, $default);
     }
@@ -189,8 +190,8 @@ class Request
      * Get the value of an item that was submitted via the PUT
      * method (either spoofed or via REST).
      *
-     * @param  string $key     The array key.
-     * @param  string $default The default value.
+     * @param string $key The array key.
+     * @param string $default The default value.
      * @return string
      */
     public static function put($key = NULL, $default = NULL)
@@ -202,8 +203,8 @@ class Request
      * Get the value of an item that was submitted via the DELETE
      * method (either spoofed or via REST).
      *
-     * @param  string $key     The array key.
-     * @param  string $default The default value.
+     * @param string $key The array key.
+     * @param string $default The default value.
      * @return string
      */
     public static function delete($key = NULL, $default = NULL)
@@ -214,8 +215,8 @@ class Request
     /**
      * Get the value of an item in the $_FILES array.
      *
-     * @param  string $key     The array key.
-     * @param  string $default The default value.
+     * @param string $key The array key.
+     * @param string $default The default value.
      * @return string
      */
     public static function files($key = NULL, $default = NULL)
@@ -226,8 +227,8 @@ class Request
     /**
      * Get the value of an item in the $_SESSION array.
      *
-     * @param  string $key     The array key.
-     * @param  string $default The default value.
+     * @param string $key The array key.
+     * @param string $default The default value.
      * @return string
      */
     public static function session($key = NULL, $default = NULL)
@@ -238,8 +239,8 @@ class Request
     /**
      * Get the value of an item in the $_COOKIE array.
      *
-     * @param  string $key     The array key.
-     * @param  string $default The default value.
+     * @param string $key The array key.
+     * @param string $default The default value.
      * @return string
      */
     public static function cookie($key = NULL, $default = NULL)
@@ -250,8 +251,8 @@ class Request
     /**
      * Get the value of an item in the $_ENV array.
      *
-     * @param  string $key     The array key.
-     * @param  string $default The default value.
+     * @param string $key The array key.
+     * @param string $default The default value.
      * @return string
      */
     public static function env($key = NULL, $default = NULL)
@@ -262,8 +263,8 @@ class Request
     /**
      * Get the value of an item in the $_SERVER array.
      *
-     * @param  string $key     The array key.
-     * @param  string $default The default value.
+     * @param string $key The array key.
+     * @param string $default The default value.
      * @return string
      */
     public static function server($key = NULL, $default = NULL)
@@ -275,8 +276,8 @@ class Request
      * Get the value of an item from the input data submitted
      * via GET, POST, PUT or DELETE.
      *
-     * @param  string $key     The array key.
-     * @param  string $default The default value.
+     * @param string $key The array key.
+     * @param string $default The default value.
      * @return string
      */
     public static function input($key = NULL, $default = NULL)
@@ -288,8 +289,8 @@ class Request
      * Get the value of an item from the input data submitted
      * via GET, POST, PUT, DELETE or FILES.
      *
-     * @param  string $key     The array key.
-     * @param  string $default The default value.
+     * @param string $key The array key.
+     * @param string $default The default value.
      * @return string
      */
     public static function all($key = NULL, $default = NULL)
@@ -308,12 +309,12 @@ class Request
      *   $input = Request::only(array('username', 'email'));
      * </code>
      *
-     * @param  array $keys The keys to select from the input.
+     * @param array $keys The keys to select from the input.
      * @return array
      */
     public static function only($keys)
     {
-        return array_intersect_key(static::input(), array_flip((array) $keys));
+        return array_intersect_key(static::input(), array_flip((array)$keys));
     }
 
     /**
@@ -328,12 +329,12 @@ class Request
      *   $input = Request::except(array('username', 'email'));
      * </code>
      *
-     * @param  array $keys The keys to ignore from the input.
+     * @param array $keys The keys to ignore from the input.
      * @return array
      */
     public static function except($keys)
     {
-        return array_diff_key(static::input(), array_flip((array) $keys));
+        return array_diff_key(static::input(), array_flip((array)$keys));
     }
 
     /**
@@ -350,16 +351,16 @@ class Request
      *   if (Request::has(array('id', 'name'))) { // do stuff }
      * </code>
      *
-     * @param  mixed $keys The input data key, or an array of keys.
+     * @param mixed $keys The input data key, or an array of keys.
      * @return bool
      */
     public static function has($keys)
     {
-        foreach ((array) $keys as $key) {
+        foreach ((array)$keys as $key) {
             if (trim(static::input($key)) == '')
                 return FALSE;
         }
-        
+
         return TRUE;
     }
 
@@ -368,7 +369,7 @@ class Request
      *
      * Defaults to HTTP/1.1.
      *
-     * @param  string $default The default value.
+     * @param string $default The default value.
      * @return string
      */
     public static function protocol($default = 'HTTP/1.1')
@@ -382,7 +383,7 @@ class Request
      * If the method is called with TRUE, the scheme will returned
      * with a :// suffix.
      *
-     * @param  bool   $decorated Add :// suffix.
+     * @param bool $decorated Add :// suffix.
      * @return string
      */
     public static function scheme($decorated = FALSE)
@@ -400,10 +401,10 @@ class Request
     {
         if (strtoupper(static::server('HTTPS')) == 'ON')
             return TRUE;
-        
-        if (! static::entrusted())
+
+        if (!static::entrusted())
             return FALSE;
-        
+
         return (strtoupper(static::server('SSL_HTTPS')) == 'ON' || strtoupper(static::server('X_FORWARDED_PROTO')) == 'HTTPS');
     }
 
@@ -428,10 +429,10 @@ class Request
      */
     public static function safe()
     {
-        return in_array(static::method(), array(
+        return in_array(static::method(), [
             'GET',
-            'HEAD'
-        ));
+            'HEAD',
+        ]);
     }
 
     /**
@@ -447,7 +448,7 @@ class Request
     /**
      * Get the address of the request's referrer.
      *
-     * @param  string $default The default value.
+     * @param string $default The default value.
      * @return string
      */
     public static function referrer($default = NULL)
@@ -461,22 +462,22 @@ class Request
      * Elements of the resolvers array are keys in the $_SERVER array
      * with optional 'modifier' functions to tweak the returned value.
      *
-     * @param  array $resolvers Priority ordered list of URI resolvers.
+     * @param array $resolvers Priority ordered list of URI resolvers.
      * @return array
      */
-    public static function resolvers($resolvers = array())
+    public static function resolvers($resolvers = [])
     {
         if ($resolvers || empty(static::$resolvers)) {
-            static::$resolvers = $resolvers + array(
-                'PATH_INFO',
-                'REQUEST_URI' => function ($uri) {
-                    return parse_url($uri, PHP_URL_PATH);
-                },
-                'PHP_SELF',
-                'REDIRECT_URL'
-            );
+            static::$resolvers = $resolvers + [
+                    'PATH_INFO',
+                    'REQUEST_URI' => function ($uri) {
+                        return parse_url($uri, PHP_URL_PATH);
+                    },
+                    'PHP_SELF',
+                    'REDIRECT_URL',
+                ];
         }
-        
+
         return static::$resolvers;
     }
 
@@ -519,12 +520,12 @@ class Request
      * By default, the question mark is excluded. To include the
      * question mark, call the method with TRUE.
      *
-     * @param  bool   $decorated Add ? prefix.
+     * @param bool $decorated Add ? prefix.
      * @return string
      */
     public static function query($decorated = FALSE)
     {
-        if (count((array) $_GET)) {
+        if (count((array)$_GET)) {
             $query = http_build_query($_GET);
             return $decorated ? "?$query" : $query;
         }
@@ -533,10 +534,10 @@ class Request
     /**
      * Get the URI segments of the request.
      *
-     * @param  array $default The default value.
+     * @param array $default The default value.
      * @return array
      */
-    public static function segments($default = array())
+    public static function segments($default = [])
     {
         return explode('/', trim(static::uri() ?: $default, '/'));
     }
@@ -546,40 +547,40 @@ class Request
      *
      * Use a negative index to retrieve segments in reverse order.
      *
-     * @param  int    $index   A one-based segment index.
-     * @param  string $default The default value.
+     * @param int $index A one-based segment index.
+     * @param string $default The default value.
      * @return string
      */
     public static function segment($index, $default = NULL)
     {
         $segments = static::segments();
-        
+
         if ($index < 0) {
-            $index *= - 1;
+            $index *= -1;
             $segments = array_reverse($segments);
         }
-        
+
         return static::lookup($segments, $index - 1, $default);
     }
 
     /**
      * Get an ordered array of values from an HTTP accept header.
      *
-     * @param  string $terms An HTTP accept header.
-     * @param  string $regex A regex for parsing the header.
+     * @param string $terms An HTTP accept header.
+     * @param string $regex A regex for parsing the header.
      * @return array
      */
     protected static function parse($terms, $regex)
     {
-        $result = array();
-        
+        $result = [];
+
         foreach (array_reverse(explode(',', $terms)) as $part) {
             if (preg_match("/{$regex}/", $part, $m)) {
                 $quality = isset($m['quality']) ? $m['quality'] : 1;
                 $result[$m['term']] = $quality;
             }
         }
-        
+
         arsort($result);
         return array_keys($result);
     }
@@ -587,15 +588,15 @@ class Request
     /**
      * Associate a format with a media type.
      *
-     * @param  string $format The format.
-     * @param  string $type   The media type.
+     * @param string $format The format.
+     * @param string $type The media type.
      * @return void
      */
     public static function format($format, $types)
     {
-        static::$formats[$format] = is_array($types) ? $types : array(
-            $types
-        );
+        static::$formats[$format] = is_array($types) ? $types : [
+            $types,
+        ];
     }
 
     /**
@@ -603,7 +604,7 @@ class Request
      *
      * Defaults to 'en'.
      *
-     * @param  string $default The default value.
+     * @param string $default The default value.
      * @return string
      */
     public static function language($default = NULL)
@@ -624,21 +625,21 @@ class Request
     /**
      * Format a media type.
      *
-     * @param  string $default The media type.
-     * @param  bool   $strict  Return the raw media type.
+     * @param string $default The media type.
+     * @param bool $strict Return the raw media type.
      * @return string
      */
     protected static function media($type, $strict = FALSE)
     {
         if ($strict)
             return $type;
-        
+
         $type = preg_split('/\s*;\s*/', $type)[0];
         foreach (static::$formats as $format => $types) {
-            if (in_array($type, (array) $types))
+            if (in_array($type, (array)$types))
                 return $format;
         }
-        
+
         return $type;
     }
 
@@ -647,8 +648,8 @@ class Request
      *
      * Defaults to 'application/x-www-form-urlencoded'.
      *
-     * @param  string $default The default value.
-     * @param  bool   $strict  Return the raw media type.
+     * @param string $default The default value.
+     * @param bool $strict Return the raw media type.
      * @return string
      */
     public static function type($default = NULL, $strict = FALSE)
@@ -662,8 +663,8 @@ class Request
      *
      * Defaults to 'html'.
      *
-     * @param  string $default The default value.
-     * @param  bool   $strict  Return the raw media type.
+     * @param string $default The default value.
+     * @param bool $strict Return the raw media type.
      * @return string
      */
     public static function accept($default = NULL, $strict = FALSE)
@@ -687,7 +688,7 @@ class Request
      *
      * Defaults to 'utf-8'.
      *
-     * @param  string $default The default value.
+     * @param string $default The default value.
      * @return string
      */
     public static function charset($default = NULL)
@@ -708,7 +709,7 @@ class Request
     /**
      * Get the user agent. e.g. Mozilla/5.0 (Macintosh; ...)
      *
-     * @param  string $default The default value.
+     * @param string $default The default value.
      * @return string
      */
     public static function agent($default = NULL)
@@ -725,13 +726,13 @@ class Request
      *
      * This method is not cumulative.
      *
-     * @param  mixed $proxies The IP address of a trusted proxy,
+     * @param mixed $proxies The IP address of a trusted proxy,
      *         or an array of trusted proxies.
      * @return void
      */
     public static function proxies($proxies)
     {
-        static::$proxies = (array) $proxies;
+        static::$proxies = (array)$proxies;
     }
 
     /**
@@ -753,17 +754,17 @@ class Request
      *
      * The port number, if present, is stripped.
      *
-     * @param  string $default The default value.
+     * @param string $default The default value.
      * @return string
      */
     public static function host($default = NULL)
     {
-        $keys = array(
+        $keys = [
             'HTTP_HOST',
             'SERVER_NAME',
-            'SERVER_ADDR'
-        );
-        
+            'SERVER_ADDR',
+        ];
+
         if (static::entrusted() && $host = static::server('X_FORWARDED_HOST')) {
             $host = explode(',', $host);
             $host = trim($host[count($host) - 1]);
@@ -775,7 +776,7 @@ class Request
                 }
             }
         }
-        
+
         return isset($host) ? preg_replace('/:\d+$/', '', $host) : $default;
     }
 
@@ -793,24 +794,24 @@ class Request
      *
      * Returns 0.0.0.0 if a valid IP address cannot be obtained.
      *
-     * @param  bool $trusted Trust an IP address set by the client
+     * @param bool $trusted Trust an IP address set by the client
      *         via HTTP_CLIENT_IP.
      * @return string
      */
     public static function ip($trusted = TRUE)
     {
-        $keys = array(
+        $keys = [
             'HTTP_X_FORWARDED_FOR',
             'HTTP_X_FORWARDED',
             'HTTP_FORWARDED_FOR',
-            'HTTP_FORWARDED'
-        );
-        
-        $ips = array();
-        
+            'HTTP_FORWARDED',
+        ];
+
+        $ips = [];
+
         if ($trusted && isset($_SERVER['HTTP_CLIENT_IP']))
             $ips[] = $_SERVER['HTTP_CLIENT_IP'];
-        
+
         foreach ($keys as $key) {
             if (isset($_SERVER[$key])) {
                 if (static::entrusted()) {
@@ -819,13 +820,13 @@ class Request
                 }
             }
         }
-        
+
         foreach ($ips as $ip) {
             if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 || FILTER_FLAG_IPV6 || FILTER_FLAG_NO_PRIV_RANGE || FILTER_FLAG_NO_RES_RANGE)) {
                 return $ip;
             }
         }
-        
+
         return static::server('REMOTE_ADDR', '0.0.0.0');
     }
 
@@ -837,18 +838,27 @@ class Request
      *
      * Defaults to port 80 if SERVER_PORT is not defined.
      *
-     * @param  bool   $decorated Prefix with :.
+     * @param bool $decorated Prefix with :.
      * @return string
      */
     public static function port($decorated = FALSE)
     {
         $port = static::entrusted() ? static::server('X_FORWARDED_PORT') : NULL;
-        
+
         $port = $port ?: static::server('SERVER_PORT');
-        
-        return $decorated ? (in_array($port, array(
+
+        return $decorated ? (in_array($port, [
             80,
-            443
-        )) ? '' : ":$port") : $port;
+            443,
+        ]) ? '' : ":$port") : $port;
+    }
+
+    public static function header($key = NULL, $default = NULL)
+    {
+        $headers = getallheaders();
+        if (!$key) {
+            return $headers;
+        }
+        return isset($headers[$key]) ? $headers[$key] : $default;
     }
 }
