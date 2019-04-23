@@ -84,57 +84,6 @@ class Request
     ];
 
     /**
-     * Get the value of an item in a superglobal array.
-     *
-     * @param array $array The superglobal array.
-     * @param string $key The array key.
-     * @param string $default The default value.
-     * @return string
-     */
-    protected static function lookup($array, $key, $default)
-    {
-        if ($key === NULL)
-            return $array;
-        return isset($array[$key]) ? $array[$key] : $default;
-    }
-
-    /**
-     * Return a single array containing all input data (i.e. GET,
-     * POST, PUT and DELETE).
-     *
-     * @return array
-     */
-    protected static function submitted()
-    {
-        if (!empty(static::$input))
-            return static::$input;
-
-        parse_str(static::body(), $input);
-        return static::$input = (array)$_GET + (array)$_POST + $input;
-    }
-
-    /**
-     * Check if the request method has been overriden.
-     *
-     * @return bool
-     */
-    protected static function overridden()
-    {
-        return isset($_POST[static::OVERRIDE]) || isset($_SERVER[static::OVERRIDE]);
-    }
-
-    /**
-     * Get the raw body of a request.
-     *
-     * @param string $default The default value.
-     * @return string
-     */
-    public static function body($default = NULL)
-    {
-        return file_get_contents('php://input') ?: $default;
-    }
-
-    /**
      * Get the value of an item in the $_GET array.
      *
      * <code>
@@ -158,6 +107,21 @@ class Request
     }
 
     /**
+     * Get the value of an item in a superglobal array.
+     *
+     * @param array $array The superglobal array.
+     * @param string $key The array key.
+     * @param string $default The default value.
+     * @return string
+     */
+    protected static function lookup($array, $key, $default)
+    {
+        if ($key === NULL)
+            return $array;
+        return isset($array[$key]) ? $array[$key] : $default;
+    }
+
+    /**
      * Get the value of an item in the $_POST array.
      *
      * @param string $key The array key.
@@ -167,6 +131,43 @@ class Request
     public static function post($key = NULL, $default = NULL)
     {
         return static::lookup($_POST, $key, $default);
+    }
+
+    /**
+     * Get the value of an item that was submitted via the PUT
+     * method (either spoofed or via REST).
+     *
+     * @param string $key The array key.
+     * @param string $default The default value.
+     * @return string
+     */
+    public static function put($key = NULL, $default = NULL)
+    {
+        return static::method() === 'PUT' ? static::stream($key, $default) : $default;
+    }
+
+    /**
+     * Get the request method. e.g. GET, POST.
+     *
+     * This method can be overridden to support non-browser request
+     * methods. e.g. PUT, DELETE.
+     *
+     * @return string
+     */
+    public static function method()
+    {
+        $method = static::overridden() ? (isset($_POST[static::OVERRIDE]) ? $_POST[static::OVERRIDE] : $_SERVER[static::OVERRIDE]) : $_SERVER['REQUEST_METHOD'];
+        return strtoupper($method);
+    }
+
+    /**
+     * Check if the request method has been overriden.
+     *
+     * @return bool
+     */
+    protected static function overridden()
+    {
+        return isset($_POST[static::OVERRIDE]) || isset($_SERVER[static::OVERRIDE]);
     }
 
     /**
@@ -187,19 +188,6 @@ class Request
     }
 
     /**
-     * Get the value of an item that was submitted via the PUT
-     * method (either spoofed or via REST).
-     *
-     * @param string $key The array key.
-     * @param string $default The default value.
-     * @return string
-     */
-    public static function put($key = NULL, $default = NULL)
-    {
-        return static::method() === 'PUT' ? static::stream($key, $default) : $default;
-    }
-
-    /**
      * Get the value of an item that was submitted via the DELETE
      * method (either spoofed or via REST).
      *
@@ -210,18 +198,6 @@ class Request
     public static function delete($key = NULL, $default = NULL)
     {
         return static::method() === 'DELETE' ? static::stream($key, $default) : $default;
-    }
-
-    /**
-     * Get the value of an item in the $_FILES array.
-     *
-     * @param string $key The array key.
-     * @param string $default The default value.
-     * @return string
-     */
-    public static function files($key = NULL, $default = NULL)
-    {
-        return static::lookup($_FILES, $key, $default);
     }
 
     /**
@@ -261,15 +237,16 @@ class Request
     }
 
     /**
-     * Get the value of an item in the $_SERVER array.
+     * Get the value of an item from the input data submitted
+     * via GET, POST, PUT, DELETE or FILES.
      *
      * @param string $key The array key.
      * @param string $default The default value.
      * @return string
      */
-    public static function server($key = NULL, $default = NULL)
+    public static function all($key = NULL, $default = NULL)
     {
-        return static::lookup($_SERVER, $key, $default);
+        return array_merge(static::input(), static::files());
     }
 
     /**
@@ -286,16 +263,41 @@ class Request
     }
 
     /**
-     * Get the value of an item from the input data submitted
-     * via GET, POST, PUT, DELETE or FILES.
+     * Return a single array containing all input data (i.e. GET,
+     * POST, PUT and DELETE).
+     *
+     * @return array
+     */
+    protected static function submitted()
+    {
+        if (!empty(static::$input))
+            return static::$input;
+
+        parse_str(static::body(), $input);
+        return static::$input = (array)$_GET + (array)$_POST + $input;
+    }
+
+    /**
+     * Get the raw body of a request.
+     *
+     * @param string $default The default value.
+     * @return string
+     */
+    public static function body($default = NULL)
+    {
+        return file_get_contents('php://input') ?: $default;
+    }
+
+    /**
+     * Get the value of an item in the $_FILES array.
      *
      * @param string $key The array key.
      * @param string $default The default value.
      * @return string
      */
-    public static function all($key = NULL, $default = NULL)
+    public static function files($key = NULL, $default = NULL)
     {
-        return array_merge(static::input(), static::files());
+        return static::lookup($_FILES, $key, $default);
     }
 
     /**
@@ -378,48 +380,15 @@ class Request
     }
 
     /**
-     * Get the request scheme. i.e. http or https.
+     * Get the value of an item in the $_SERVER array.
      *
-     * If the method is called with TRUE, the scheme will returned
-     * with a :// suffix.
-     *
-     * @param bool $decorated Add :// suffix.
+     * @param string $key The array key.
+     * @param string $default The default value.
      * @return string
      */
-    public static function scheme($decorated = FALSE)
+    public static function server($key = NULL, $default = NULL)
     {
-        $scheme = static::secure() ? 'https' : 'http';
-        return $decorated ? "$scheme://" : $scheme;
-    }
-
-    /**
-     * Check if the request was made over HTTPS.
-     *
-     * @return bool
-     */
-    public static function secure()
-    {
-        if (strtoupper(static::server('HTTPS')) == 'ON')
-            return TRUE;
-
-        if (!static::entrusted())
-            return FALSE;
-
-        return (strtoupper(static::server('SSL_HTTPS')) == 'ON' || strtoupper(static::server('X_FORWARDED_PROTO')) == 'HTTPS');
-    }
-
-    /**
-     * Get the request method. e.g. GET, POST.
-     *
-     * This method can be overridden to support non-browser request
-     * methods. e.g. PUT, DELETE.
-     *
-     * @return string
-     */
-    public static function method()
-    {
-        $method = static::overridden() ? (isset($_POST[static::OVERRIDE]) ? $_POST[static::OVERRIDE] : $_SERVER[static::OVERRIDE]) : $_SERVER['REQUEST_METHOD'];
-        return strtoupper($method);
+        return static::lookup($_SERVER, $key, $default);
     }
 
     /**
@@ -457,31 +426,6 @@ class Request
     }
 
     /**
-     * Override the list of default URI resolvers.
-     *
-     * Elements of the resolvers array are keys in the $_SERVER array
-     * with optional 'modifier' functions to tweak the returned value.
-     *
-     * @param array $resolvers Priority ordered list of URI resolvers.
-     * @return array
-     */
-    public static function resolvers($resolvers = [])
-    {
-        if ($resolvers || empty(static::$resolvers)) {
-            static::$resolvers = $resolvers + [
-                    'PATH_INFO',
-                    'REQUEST_URI' => function ($uri) {
-                        return parse_url($uri, PHP_URL_PATH);
-                    },
-                    'PHP_SELF',
-                    'REDIRECT_URL',
-                ];
-        }
-
-        return static::$resolvers;
-    }
-
-    /**
      * Get the requested URL. e.g. http://a.com/bar?q=foo
      *
      * @return string
@@ -489,6 +433,105 @@ class Request
     public static function url()
     {
         return static::scheme(TRUE) . static::host() . static::port(TRUE) . static::uri() . static::query(TRUE);
+    }
+
+    /**
+     * Get the request scheme. i.e. http or https.
+     *
+     * If the method is called with TRUE, the scheme will returned
+     * with a :// suffix.
+     *
+     * @param bool $decorated Add :// suffix.
+     * @return string
+     */
+    public static function scheme($decorated = FALSE)
+    {
+        $scheme = static::secure() ? 'https' : 'http';
+        return $decorated ? "$scheme://" : $scheme;
+    }
+
+    /**
+     * Check if the request was made over HTTPS.
+     *
+     * @return bool
+     */
+    public static function secure()
+    {
+        if (strtoupper(static::server('HTTPS')) == 'ON')
+            return TRUE;
+
+        if (!static::entrusted())
+            return FALSE;
+
+        return (strtoupper(static::server('SSL_HTTPS')) == 'ON' || strtoupper(static::server('X_FORWARDED_PROTO')) == 'HTTPS');
+    }
+
+    /**
+     * Check if all proxy servers are trusted, or if this request has
+     * been specifically sent via a trusted proxy server.
+     *
+     * @return bool
+     */
+    public static function entrusted()
+    {
+        return (empty(static::$proxies) || isset($_SERVER['REMOTE_ADDR']) && in_array($_SERVER['REMOTE_ADDR'], static::$proxies));
+    }
+
+    /**
+     * Resolve the name of the web server.
+     *
+     * The resolution order is the 'host' header of the request,
+     * then the 'server name' directive, then the server IP address.
+     *
+     * The port number, if present, is stripped.
+     *
+     * @param string $default The default value.
+     * @return string
+     */
+    public static function host($default = NULL)
+    {
+        $keys = [
+            'HTTP_HOST',
+            'SERVER_NAME',
+            'SERVER_ADDR',
+        ];
+
+        if (static::entrusted() && $host = static::server('X_FORWARDED_HOST')) {
+            $host = explode(',', $host);
+            $host = trim($host[count($host) - 1]);
+        } else {
+            foreach ($keys as $key) {
+                if (isset($_SERVER[$key])) {
+                    $host = $_SERVER[$key];
+                    break;
+                }
+            }
+        }
+
+        return isset($host) ? preg_replace('/:\d+$/', '', $host) : $default;
+    }
+
+    /**
+     * Get the port number of the request. e.g. 80
+     *
+     * If the method is called with TRUE, the port number will
+     * be omitted if 80 or 443, and otherwise prefixed with a colon.
+     *
+     * Defaults to port 80 if SERVER_PORT is not defined.
+     *
+     * @param bool $decorated Prefix with :.
+     * @return string
+     */
+    public static function port($decorated = FALSE)
+    {
+        $port = static::entrusted() ? static::server('X_FORWARDED_PORT') : NULL;
+
+        $port = $port ?: static::server('SERVER_PORT');
+
+        return $decorated ? (in_array($port, [
+            80,
+            443,
+        ]) ? '' : ":$port") : $port;
     }
 
     /**
@@ -515,6 +558,31 @@ class Request
     }
 
     /**
+     * Override the list of default URI resolvers.
+     *
+     * Elements of the resolvers array are keys in the $_SERVER array
+     * with optional 'modifier' functions to tweak the returned value.
+     *
+     * @param array $resolvers Priority ordered list of URI resolvers.
+     * @return array
+     */
+    public static function resolvers($resolvers = [])
+    {
+        if ($resolvers || empty(static::$resolvers)) {
+            static::$resolvers = $resolvers + [
+                    'PATH_INFO',
+                    'REQUEST_URI' => function ($uri) {
+                        return parse_url($uri, PHP_URL_PATH);
+                    },
+                    'PHP_SELF',
+                    'REDIRECT_URL',
+                ];
+        }
+
+        return static::$resolvers;
+    }
+
+    /**
      * Get the request query string. e.g. q=search&foo=bar
      *
      * By default, the question mark is excluded. To include the
@@ -529,17 +597,6 @@ class Request
             $query = http_build_query($_GET);
             return $decorated ? "?$query" : $query;
         }
-    }
-
-    /**
-     * Get the URI segments of the request.
-     *
-     * @param array $default The default value.
-     * @return array
-     */
-    public static function segments($default = [])
-    {
-        return explode('/', trim(static::uri() ?: $default, '/'));
     }
 
     /**
@@ -564,25 +621,14 @@ class Request
     }
 
     /**
-     * Get an ordered array of values from an HTTP accept header.
+     * Get the URI segments of the request.
      *
-     * @param string $terms An HTTP accept header.
-     * @param string $regex A regex for parsing the header.
+     * @param array $default The default value.
      * @return array
      */
-    protected static function parse($terms, $regex)
+    public static function segments($default = [])
     {
-        $result = [];
-
-        foreach (array_reverse(explode(',', $terms)) as $part) {
-            if (preg_match("/{$regex}/", $part, $m)) {
-                $quality = isset($m['quality']) ? $m['quality'] : 1;
-                $result[$m['term']] = $quality;
-            }
-        }
-
-        arsort($result);
-        return array_keys($result);
+        return explode('/', trim(static::uri() ?: $default, '/'));
     }
 
     /**
@@ -623,6 +669,43 @@ class Request
     }
 
     /**
+     * Get an ordered array of values from an HTTP accept header.
+     *
+     * @param string $terms An HTTP accept header.
+     * @param string $regex A regex for parsing the header.
+     * @return array
+     */
+    protected static function parse($terms, $regex)
+    {
+        $result = [];
+
+        foreach (array_reverse(explode(',', $terms)) as $part) {
+            if (preg_match("/{$regex}/", $part, $m)) {
+                $quality = isset($m['quality']) ? $m['quality'] : 1;
+                $result[$m['term']] = $quality;
+            }
+        }
+
+        arsort($result);
+        return array_keys($result);
+    }
+
+    /**
+     * Get the media type of the body of a request.
+     *
+     * Defaults to 'application/x-www-form-urlencoded'.
+     *
+     * @param string $default The default value.
+     * @param bool $strict Return the raw media type.
+     * @return string
+     */
+    public static function type($default = NULL, $strict = FALSE)
+    {
+        $type = static::server('HTTP_CONTENT_TYPE', $default ?: 'application/x-www-form-urlencoded');
+        return static::media($type, $strict);
+    }
+
+    /**
      * Format a media type.
      *
      * @param string $default The media type.
@@ -641,21 +724,6 @@ class Request
         }
 
         return $type;
-    }
-
-    /**
-     * Get the media type of the body of a request.
-     *
-     * Defaults to 'application/x-www-form-urlencoded'.
-     *
-     * @param string $default The default value.
-     * @param bool $strict Return the raw media type.
-     * @return string
-     */
-    public static function type($default = NULL, $strict = FALSE)
-    {
-        $type = static::server('HTTP_CONTENT_TYPE', $default ?: 'application/x-www-form-urlencoded');
-        return static::media($type, $strict);
     }
 
     /**
@@ -736,51 +804,6 @@ class Request
     }
 
     /**
-     * Check if all proxy servers are trusted, or if this request has
-     * been specifically sent via a trusted proxy server.
-     *
-     * @return bool
-     */
-    public static function entrusted()
-    {
-        return (empty(static::$proxies) || isset($_SERVER['REMOTE_ADDR']) && in_array($_SERVER['REMOTE_ADDR'], static::$proxies));
-    }
-
-    /**
-     * Resolve the name of the web server.
-     *
-     * The resolution order is the 'host' header of the request,
-     * then the 'server name' directive, then the server IP address.
-     *
-     * The port number, if present, is stripped.
-     *
-     * @param string $default The default value.
-     * @return string
-     */
-    public static function host($default = NULL)
-    {
-        $keys = [
-            'HTTP_HOST',
-            'SERVER_NAME',
-            'SERVER_ADDR',
-        ];
-
-        if (static::entrusted() && $host = static::server('X_FORWARDED_HOST')) {
-            $host = explode(',', $host);
-            $host = trim($host[count($host) - 1]);
-        } else {
-            foreach ($keys as $key) {
-                if (isset($_SERVER[$key])) {
-                    $host = $_SERVER[$key];
-                    break;
-                }
-            }
-        }
-
-        return isset($host) ? preg_replace('/:\d+$/', '', $host) : $default;
-    }
-
-    /**
      * Get the client IP address.
      *
      * By default, HTTP_CLIENT_IP is trusted. Call the method
@@ -831,28 +854,11 @@ class Request
     }
 
     /**
-     * Get the port number of the request. e.g. 80
-     *
-     * If the method is called with TRUE, the port number will
-     * be omitted if 80 or 443, and otherwise prefixed with a colon.
-     *
-     * Defaults to port 80 if SERVER_PORT is not defined.
-     *
-     * @param bool $decorated Prefix with :.
-     * @return string
+     * Get http request header(s)
+     * @param string $key
+     * @param string|null $default
+     * @return mixed
      */
-    public static function port($decorated = FALSE)
-    {
-        $port = static::entrusted() ? static::server('X_FORWARDED_PORT') : NULL;
-
-        $port = $port ?: static::server('SERVER_PORT');
-
-        return $decorated ? (in_array($port, [
-            80,
-            443,
-        ]) ? '' : ":$port") : $port;
-    }
-
     public static function header($key = NULL, $default = NULL)
     {
         $headers = getallheaders();
@@ -860,5 +866,17 @@ class Request
             return $headers;
         }
         return isset($headers[$key]) ? $headers[$key] : $default;
+    }
+
+    /**
+     * Checks if the request method is of specified type.
+     *
+     * @param string $method Uppercase request method (GET, POST etc)
+     *
+     * @return bool
+     */
+    public function isMethod($method)
+    {
+        return self::method() === strtoupper($method);
     }
 }
