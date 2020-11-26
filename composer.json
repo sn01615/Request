@@ -21,8 +21,5 @@
   "keywords": [
     "Request"
   ],
-  "license": "WTFPL",
-  "require": {
-    "ext-apache": "*"
-  }
+  "license": "WTFPL"
 }
